@@ -660,7 +660,6 @@ function moarButton() {
   }
   link += '&jsonp=folderCallback';
   $.get(link, folderCallback, 'jsonp');
-  infiniteScrollLoading = false;
 }
 tempFolderName = null;
 
@@ -689,6 +688,7 @@ function displayFolder(folder_name) {
     }
     // $('#previewarea').append('<input type="button" value="Load more posts" onclick="moarButton()" >');
     onReload();
+    infiniteScrollLoading = false;
   }
 }
 
