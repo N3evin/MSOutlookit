@@ -218,7 +218,6 @@ function handleInfiniteScroll(){
   if (isElementScrolledToTheBottom && !infiniteScrollLoading) {
     infiniteScrollLoading = true;
     moarButton();
-    infiniteScrollLoading = false;
   }
 }
 
@@ -661,6 +660,7 @@ function moarButton() {
   }
   link += '&jsonp=folderCallback';
   $.get(link, folderCallback, 'jsonp');
+  infiniteScrollLoading = false;
 }
 tempFolderName = null;
 
