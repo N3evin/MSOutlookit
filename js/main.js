@@ -1,6 +1,7 @@
 var noTaskbar = 0;
 var alwaysHideNSFW = true;
-var randomNames = [
+// Fallback names in case API fails
+var fallbackNames = [
   'Rick Deckard',
   'James Bond',
   'Korben Dallas',
@@ -33,12 +34,32 @@ var randomNames = [
   'Ruby Rhod',
   'Chief John Anderton'
 ];
+var randomNames = [];
 var idList = [];
 var globalStoryDict = {};
 var infiniteScrollLoading = false;
 
 function getRandomName() {
-  return randomNames[Number(Math.floor(Math.random() * randomNames.length))];
+  var namesArray = randomNames.length > 0 ? randomNames : fallbackNames;
+  return namesArray[Number(Math.floor(Math.random() * namesArray.length))];
+}
+
+async function initializeRandomNames() {
+  try {
+    const response = await fetch('https://randomuser.me/api/?results=1000');
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const data = await response.json();
+    randomNames = data.results.map(function(user) {
+      return user.name.first + ' ' + user.name.last;
+    });
+    console.log('Successfully loaded ' + randomNames.length + ' random names from API');
+  } catch (error) {
+    console.error('Error fetching random names from API:', error);
+    console.log('Using fallback names instead');
+    randomNames = fallbackNames.slice(); // Use fallback names
+  }
 }
 
 function myFolder() {
@@ -879,6 +900,9 @@ function addSubReddit() {
     }
 }
 $(document).ready(function() {
+  // Initialize random names from API
+  initializeRandomNames();
+  
   document.getElementById("previewarea").addEventListener("scroll", handleInfiniteScroll);
   onResize();
   $(window).resize(onResize);
@@ -910,5 +934,3 @@ $(document).ready(function() {
     }
   });
 });
-
-
