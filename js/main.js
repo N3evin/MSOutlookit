@@ -264,6 +264,23 @@ function getRedditDomain() {
   return 'https://msoutlookit.n3evin.workers.dev';
 }
 
+function fetchJson(url, callback, errorCallback) {
+  fetch(url)
+    .then(function(response) {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(callback)
+    .catch(function(error) {
+      console.error('Error fetching JSON:', error);
+      if (errorCallback) {
+        errorCallback(error);
+      }
+    });
+}
+
 function populateStory(id) {
   var story = globalStoryDict[id];
   currentStory = id;
@@ -276,8 +293,9 @@ function populateStory(id) {
   $('div.theemailbody').html('<img src="images/loading.gif">');
   var storyName = id.substr(3);
   var link = getRedditDomain() + '/comments/' + storyName + '.json';
-  link = link + '?jsonp=commentsCallback';
-  $.get(link, commentsCallback, 'jsonp');
+  fetchJson(link, commentsCallback, function(error) {
+    $('div.theemailbody').html('Error loading comments. Please try again.');
+  });
   return true;
 }
 currentStory = null;
@@ -618,9 +636,11 @@ function folderClick(folder_name) {
     if (subredditname == 'FrontPage') {
       link = getRedditDomain() + '/r/all/.json';
     }
-    link = link + '?jsonp=folderCallback';
     tempFolderName = folder_name;
-    $.get(link, folderCallback, 'jsonp');
+    fetchJson(link, folderCallback, function(error) {
+      $('#previewarea').html('Error loading folder. Please try again.');
+      $('.afolder').click(folderIconClick);
+    });
   }
 }
 var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -659,8 +679,10 @@ function moarButton() {
   } else {
     var link = getRedditDomain() + '/r/' + current_folder.subredditname + "/new/.json?count=" + current_folder.count + '&after=' + current_folder.after;
   }
-  link += '&jsonp=folderCallback';
-  $.get(link, folderCallback, 'jsonp');
+  fetchJson(link, folderCallback, function(error) {
+    infiniteScrollLoading = false;
+    $('.afolder').click(folderIconClick);
+  });
 }
 tempFolderName = null;
 
@@ -712,8 +734,9 @@ function handleEmailSend(id, tofield, ccfield, subjectfield, body) {
     }
     var link = tofield += '/.json';
     link = link.replace(/\s/g, '');
-    link = link + '?jsonp=randomLinkCallback';
-    $.get(link, randomLinkCallback, 'jsonp');
+    fetchJson(link, randomLinkCallback, function(error) {
+      $('.theemailbody').html('Error loading link. Please try again.');
+    });
     $('.theemailbody').html('<img src="images/loading.gif">');
     $('.anemailhi').removeClass('anemailhi');
     return 0;
@@ -887,4 +910,3 @@ $(document).ready(function() {
     }
   });
 });
-
