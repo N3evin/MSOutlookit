@@ -45,6 +45,7 @@ function getRandomName() {
 }
 
 async function initializeRandomNames() {
+  console.log('Initializing random names from API...');
   try {
     const response = await fetch('https://randomuser.me/api/?results=1000');
     if (!response.ok) {
@@ -636,6 +637,10 @@ firsttime = true;
 
 function folderClick(folder_name) {
   currentStory = null;
+  if (!globalFolderDict[folder_name]) {
+    console.error('Folder not found:', folder_name);
+    return;
+  }
   current_folder = globalFolderDict[folder_name];
   $('#previewarea').html('');
   if (!firsttime) {
@@ -658,6 +663,7 @@ function folderClick(folder_name) {
       link = getRedditDomain() + '/r/all/.json';
     }
     tempFolderName = folder_name;
+    console.log('Loading folder:', folder_name, 'Link:', link);
     fetchJson(link, folderCallback, function(error) {
       $('#previewarea').html('Error loading folder. Please try again.');
       $('.afolder').click(folderIconClick);
@@ -899,6 +905,31 @@ function addSubReddit() {
         makeFolder(subreddit);
     }
 }
+
+function deleteCurrentFolder() {
+    if (current_folder == null) {
+        return;
+    }
+    var folderId = current_folder.strippedID;
+    
+    // Prevent deletion of Front Page
+    if (folderId === 'folder_FrontPage') {
+        makePopup('Cannot delete Front Page folder');
+        return;
+    }
+    
+    // Remove from globalFolderDict
+    delete globalFolderDict[folderId];
+    
+    // Remove from DOM
+    $('#' + folderId).parent().remove();
+    
+    // Switch to Front Page if we deleted the current folder
+    if (current_folder.strippedID === folderId) {
+        $('#folder_FrontPage').parent().addClass('foldwraphi');
+        folderClick('folder_FrontPage');
+    }
+}
 $(document).ready(async function() {
   // Initialize random names from API and wait for it to complete
   await initializeRandomNames();
@@ -907,6 +938,7 @@ $(document).ready(async function() {
   onResize();
   $(window).resize(onResize);
   $('.newemailbutton').click(addSubReddit);
+  $('.deletebutton').click(deleteCurrentFolder);
   main_inbox = makeFolder('Front Page');
   makeFolder('gaming');
   makeFolder('pics');
@@ -915,8 +947,14 @@ $(document).ready(async function() {
   makeFolder('funny');
   makeFolder('iama');
   makeFolder('wtf');
-  $('#folder_FrontPage').parent().addClass('foldwraphi');
-  folderClick('folder_FrontPage');
+  
+  // Ensure Front Page folder exists before clicking
+  if (globalFolderDict['folder_FrontPage']) {
+    $('#folder_FrontPage').parent().addClass('foldwraphi');
+    folderClick('folder_FrontPage');
+  } else {
+    console.error('Front Page folder not found after creation');
+  }
   $('.outlookmin').click(function() {
     for (key in globalWindowDict) {
       globalWindowDict[key].minimize();
