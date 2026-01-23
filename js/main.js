@@ -899,9 +899,9 @@ function addSubReddit() {
         makeFolder(subreddit);
     }
 }
-$(document).ready(function() {
-  // Initialize random names from API
-  initializeRandomNames();
+$(document).ready(async function() {
+  // Initialize random names from API and wait for it to complete
+  await initializeRandomNames();
   
   document.getElementById("previewarea").addEventListener("scroll", handleInfiniteScroll);
   onResize();
