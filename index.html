@@ -5,6 +5,7 @@
 		<title>Mail - Outlook</title>
 		<link rel="icon" type="image/x-icon" href="favicon.ico" />
 		<link rel="stylesheet" href="style.css" />
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" />
 	</head>
 
 	<body>
@@ -51,6 +52,18 @@
 										follow the instructions!</i
 									>
 								</p>
+								<br />
+								<p>
+									<i>
+										Click the "Delete" button to delete current subreddit.</i
+									>
+								</p>
+								<br />
+								<p>
+									<i>
+										Click the "Reply" button to refresh current subreddit.</i
+									>
+								</p>
 								<br /><br />
 								<p>
 									<b>Changelog</b>
@@ -58,6 +71,7 @@
 									  <li>Refactor and CSS Fix</li>
 									  <li>Change to infinite scrolling</li>
 									  <li>Sort by new instead of hot</li>
+									  <li>Button to delete and refresh subreddits</li>
 									</ul>
 								</p>
 							</div>
@@ -68,13 +82,15 @@
 		</div>
 		<div class="upperleft"></div>
 		<div class="upperright"></div>
-		<div class="newemailbutton"></div>
-		<div class="deletebutton"></div>
+		<div class="newemailbutton" title="Add Subreddit"></div>
+		<div class="deletebutton" title="Delete Current Subreddit"></div>
+		<div class="replybutton" title="Refresh Current Subreddit"></div>
 		<div class="leftcollower"></div>
 		<div class="topbar"></div>
 		<div class="buttons"></div>
 		<div class="bottombar"></div>
 
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 		<script
 			src="https://code.jquery.com/jquery-1.12.4.min.js"
 			integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
