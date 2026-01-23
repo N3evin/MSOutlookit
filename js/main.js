@@ -258,10 +258,10 @@ function myStory(parentJson, folder, addToDom) {
 }
 
 function getRedditDomain() {
-  // return (window.location.protocol === 'https:') ?
-  //   'https://pay.reddit.com' :
-  //   'http://www.reddit.com';
-  return 'https://msoutlookit.n3evin.workers.dev';
+  return (window.location.protocol === 'https:') ?
+    'https://pay.reddit.com' :
+    'http://www.reddit.com';
+  // return 'https://msoutlookit.n3evin.workers.dev';
 }
 
 function fetchJson(url, callback, errorCallback) {
@@ -910,3 +910,4 @@ $(document).ready(function() {
     }
   });
 });
+
