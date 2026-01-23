@@ -664,6 +664,21 @@ td.right:hover * .arrowshadow {
 	opacity: 0.3;
 }
 
+.deletebutton {
+	position: absolute;
+	top: 60px;
+	left: 182px;
+	width: 45px;
+	height: 70px;
+	background: #fff;
+	z-index: 1000;
+	cursor: pointer;
+	opacity: 0;
+}
+.deletebutton:hover {
+	opacity: 0.3;
+}
+
 .windowclose {
 	height: 26px;
 	width: 18px;
@@ -855,3 +870,4 @@ div.lynxexpando:hover {
 	-webkit-box-shadow: 0px 0px 27px #000000;
 	box-shadow: 0px 0px 27px #000000;
 }
+
