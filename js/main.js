@@ -462,17 +462,27 @@ function expandoClick() {
   $(finder).toggle();
   var resizeFunc = function() {
     var idFinder = finder;
-    var height = $(idFinder).children('.ui-wrapper').height();
-    var width = $(idFinder).children('.ui-wrapper').width() - 10;
-    $(idFinder).children('.ui-wrapper').children('.ui-resizable-e').width(width);
-    $(idFinder).children('.ui-wrapper').children('.ui-resizable-e').height(height);
-    $(idFinder).children('.ui-wrapper').children('.ui-resizable-e').css('top', '-' + String(height) + 'px');
+    var wrapper = $(idFinder).children('.ui-wrapper');
+    if (wrapper.length > 0) {
+      var height = wrapper.height();
+      var width = wrapper.width() - 10;
+      var resizeHandle = wrapper.children('.ui-resizable-e');
+      if (resizeHandle.length > 0) {
+        resizeHandle.width(width);
+        resizeHandle.height(height);
+        resizeHandle.css('top', '-' + String(height) + 'px');
+      }
+    }
   }
-  $(finder).children('img.normal').resizable({
-    'aspectRatio': true,
-    resize: resizeFunc
-  });
-  resizeFunc();
+  var imgElement = $(finder).children('img.normal');
+  if (imgElement.length > 0 && !imgElement.hasClass('ui-resizable')) {
+    imgElement.resizable({
+      'aspectRatio': true,
+      resize: resizeFunc
+    });
+    // Call resizeFunc after a short delay to ensure ui-wrapper is created
+    setTimeout(resizeFunc, 10);
+  }
 }
 
 function makeImgurExpando(externallink, title) {
@@ -814,4 +824,6 @@ $(document).ready(function() {
       }
     }
   });
+  // Event delegation for expando clicks
+  $('.theemailbody').on('click', '.expando', expandoClick);
 });
