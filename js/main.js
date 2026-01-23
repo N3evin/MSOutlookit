@@ -45,7 +45,6 @@ function getRandomName() {
 }
 
 async function initializeRandomNames() {
-  console.log('Initializing random names from API...');
   try {
     const response = await fetch('https://randomuser.me/api/?results=1000');
     if (!response.ok) {
@@ -55,7 +54,6 @@ async function initializeRandomNames() {
     randomNames = data.results.map(function(user) {
       return user.name.first + ' ' + user.name.last;
     });
-    console.log('Successfully loaded ' + randomNames.length + ' random names from API');
   } catch (error) {
     console.error('Error fetching random names from API:', error);
     console.log('Using fallback names instead');
@@ -97,7 +95,7 @@ function myWindow(type, state, tofield, ccfield, subjectfield, bodyfield, isLogi
   this.oldLeft = null;
   this.oldTop = null;
   globalWindowDict[this.id] = this;
-  var html = '<div id="%id" class="emailwindow" style="position:absolute;left:100px;top:300px;"><div class="closebuttons"></div><div class="minimize"></div><div class="maximize"></div><div class="windowclose"></div><div class="upperleftemailwindow"></div><div class="emailwindowbanner"></div><div class="emailbuttons"></div><div class="emailbuttonsbanner"></div><div class="emailcomposewindow"><input type="button" value="Send" class="sendbutton"  tabindex="%tabindex5"><div class="emailcomposebuttons"></div><input type="text" rows="1" cols="40" class="afield tofield" tabindex="%tabindex1" value="%tofield"><input type="text" rows="1" cols="19" class="afield ccfield" tabindex="%tabindex2" value="%ccfield"><input type="text" rows="1" cols="19" tabindex="%tabindex3" class="afield subjectfield" value="%subjectfield"><textarea tabindex="%tabindex4" class="emailcomposebody">%bodyfield</textarea></div></div>';
+  var html = '<div id="%id" class="emailwindow" style="position:absolute;left:100px;top:300px;"><div class="minimize"></div><div class="maximize"></div><div class="windowclose"></div><div class="upperleftemailwindow"></div><div class="emailwindowbanner"></div><div class="emailbuttons"></div><div class="emailbuttonsbanner"></div><div class="emailcomposewindow"><input type="button" value="Send" class="sendbutton"  tabindex="%tabindex5"><div class="emailcomposebuttons"></div><input type="text" rows="1" cols="40" class="afield tofield" tabindex="%tabindex1" value="%tofield"><input type="text" rows="1" cols="19" class="afield ccfield" tabindex="%tabindex2" value="%ccfield"><input type="text" rows="1" cols="19" tabindex="%tabindex3" class="afield subjectfield" value="%subjectfield"><textarea tabindex="%tabindex4" class="emailcomposebody">%bodyfield</textarea></div></div>';
   if (isLogin) {
     html = html.replace('type="text" rows="1" cols="19" class="afield ccfield', 'type="password" rows="1" cols="19" class="afield ccfield');
   }
@@ -155,7 +153,6 @@ function myWindow(type, state, tofield, ccfield, subjectfield, bodyfield, isLogi
     var subjectfield = $(this).parent().children('.subjectfield').val();
     var body = $(this).parent().children('.emailcomposebody').val();
     var id = $(this).parent().parent().attr('id');
-    handleEmailSend(id, tofield, ccfield, subjectfield, body);
   });
   $(this.minfinder).click(function() {
     var minid = $(this).attr('id');
@@ -251,9 +248,7 @@ function myStory(parentJson, folder, addToDom) {
   var name = getRandomName();
   var author = rootJson.author;
   this.id = rootJson.name;
-  var num_comments = rootJson.num_comments;
   var score = rootJson.score;
-  this.url = rootJson.url;
   this.title = rootJson.title;
   if (rootJson.over_18) {
     if (alwaysHideNSFW) {
@@ -363,8 +358,7 @@ function commentsCallback(storyJSON) {
   story.bodyHTML += commentsHTML;
   if (currentStory == theStoryID) {
     $('.theemailbody').html(story.bodyHTML);
-    onStoryLoad();
-  } else {}
+  }
 }
 
 function makeCommentHeader(score, author, body_html, id) {
@@ -407,11 +401,6 @@ function unEncode(text) {
   text = text.replace(/\n/g, '<br/>');
   text = text.replace(/&#3232;/g, '?');
   text = text.replace(/&amp;/ig, '&');
-  debug = false;
-  if (text.indexOf('uploads') != -1) {
-    debug = true;
-  }
-  numcaptures = 4;
   results = /<a href="(http:.*?\.(jpg|jpeg|png|gif|JPEG|GIF|PNG))".*?>(.*?)<\/a>/gi.exec(text);
   while (results != null) {
     var complete = results[0];
@@ -419,7 +408,6 @@ function unEncode(text) {
     var title = results[3];
     var tempHTML = makeImgurExpando(url, title);
     text = text.replace(complete, tempHTML);
-    var tosearch = text.substr(text.indexOf(tempHTML) + tempHTML.length);
     results = /<a href="(http:.*?\.(jpg|jpeg|png|gif|JPEG|GIF|PNG))".*?>(.*?)<\/a>/gi.exec(text.substr(text.indexOf(tempHTML) + tempHTML.length));
   }
   results = /<a.*?href="(http:\/\/imgur.com\/(\w+))".*?>(.*?)<\/a>/g.exec(text);
@@ -466,27 +454,6 @@ function unEncode(text) {
     }
   }
   return text;
-}
-
-function lynxexpandoClick() {
-  var tempid = $(this).attr('id');
-  var finder = '#lynxexpando' + tempid;
-  $(finder).toggle();
-  if ($(finder).text() == null || $(finder).text().length < 1) {
-    tempLynxAjaxID = finder;
-    var finder2 = '#lynxlink' + tempid;
-    var thelink = $(finder2).attr('href');
-    $(finder).text('Loading... please wait :D this crap takes a while because its my server and not yahoo');
-    makePopup('whoops! Sorry I had to take down my own server, I dont support this functionality anymore, but you can go ' +
-      ' to the link here: \n ' + thelink);
-    return;
-  }
-}
-
-function textdumpBack(data) {
-  textdump = data.textdump;
-  textdump = textdump.replace(/\n/g, '</br>');
-  $(tempLynxAjaxID).html(textdump);
 }
 
 function expandoClick() {
@@ -556,27 +523,11 @@ function getLynxdump(externallink, title) {
   return expando;
 }
 
-function isYoutube(externallink) {
-  if (externallink.indexOf('youtube.com') != -1 || externallink.indexOf('youtu.be') != -1) {
-    return true;
-  } else {
-    return false;
-  }
-}
-
 function isImgur(externallink) {
   var filetype = externallink.substr(-3, 3).toLowerCase();
   if (externallink.indexOf('imgur.com') != -1) {
     return true;
   } else if (filetype == 'png' || filetype == 'peg' || filetype == 'jpg' || filetype == 'gif') {
-    return true;
-  } else {
-    return false;
-  }
-}
-
-function isActuallyImgur(externallink) {
-  if (externallink.indexOf('imgur.com') != -1) {
     return true;
   } else {
     return false;
@@ -597,39 +548,6 @@ function onReload() {
   $('.anemail').click(emailClick);
 }
 
-function onStoryLoad() {
-  $('.expando').click(expandoClick);
-  $('.lynxexpando').click(lynxexpandoClick);
-  $('.textreplybutton').click(function() {
-    var id = $(this).attr('id').substr(1);
-    spawnReplyWindow(id);
-  });
-  $('.uparrow').click(function() {
-    makePopup('Sorry, I dont support upvoting anymore because I had to take down my server');
-    return 0;
-  });
-  $('.downarrow').click(function() {
-    makePopup('Sorry, I dont support downvoting anymore because I had to take down my server');
-    return 0;
-  });
-}
-
-function votingCallback(data) {
-  var id = data.id;
-  var finder = '';
-  if (data.dir == 1) {
-    finder = 'u' + id;
-  } else {
-    finder = 'd' + id;
-  }
-  makeSoftpopup('Voting on ' + id.substr(1) + ' was successful');
-  $('#' + finder).addClass('arrowshadow');
-  var holder = $('#' + finder).parent().children('.authorandstuff').children('.score');
-  var theScore = Number(holder.html());
-  theScore += Number(data.dir);
-  holder.html(String(theScore));
-}
-
 function spawnReplyWindow(id) {
   var asd = new myWindow('', '', 'reply ' + id, '', 'Type your reply below:', '\n\n', false);
 }
@@ -637,10 +555,6 @@ firsttime = true;
 
 function folderClick(folder_name) {
   currentStory = null;
-  if (!globalFolderDict[folder_name]) {
-    console.error('Folder not found:', folder_name);
-    return;
-  }
   current_folder = globalFolderDict[folder_name];
   $('#previewarea').html('');
   if (!firsttime) {
@@ -663,39 +577,11 @@ function folderClick(folder_name) {
       link = getRedditDomain() + '/r/all/.json';
     }
     tempFolderName = folder_name;
-    console.log('Loading folder:', folder_name, 'Link:', link);
     fetchJson(link, folderCallback, function(error) {
       $('#previewarea').html('Error loading folder. Please try again.');
       $('.afolder').click(folderIconClick);
     });
   }
-}
-var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
-function updateClock() {
-  var d = new Date();
-  var dayOfNumeric = d.getDay();
-  var dayOfWeekString = days[dayOfNumeric];
-  var dayOfMonth = d.getDate();
-  var month = d.getMonth() + 1;
-  var year = d.getFullYear();
-  var hour = d.getHours();
-  var minutes = d.getMinutes();
-  if (hour > 12) {
-    var amppm = 'PM';
-    hour -= 12;
-  } else {
-    var amppm = 'AM';
-  }
-  var minuteString = String(minutes);
-  if (minutes < 10) {
-    minuteString = '0' + minuteString;
-  }
-  var dateString = String(month) + '/' + String(dayOfMonth) + '/' + String(year);
-  var timeString = String(hour) + ':' + minuteString + ' ' + amppm;
-  $('.clockholder').html(timeString + '<br/>' + dayOfWeekString + '<br/>' + dateString);
-  var secondsToWait = 60 - d.getSeconds();
-  setTimeout('updateClock()', 1000 * secondsToWait);
 }
 globalScrollDict = {};
 
@@ -714,13 +600,8 @@ function moarButton() {
 tempFolderName = null;
 
 function folderCallback(data) {
-  console.log('the data is');
   $('.afolder').click(folderIconClick);
   var thefolder = globalFolderDict[tempFolderName];
-  if (console.log) {
-    console.log('what we got back');
-    console.log(data);
-  }
   var after = data.data.after;
   globalFolderDict[tempFolderName].after = after;
   globalFolderDict[tempFolderName].count += 25;
@@ -742,94 +623,27 @@ function displayFolder(folder_name) {
   }
 }
 
-function handleEmailSend(id, tofield, ccfield, subjectfield, body) {
-  if (tofield.substr(0, 9) == 'subreddit') {
-    $(globalWindowDict[id].idfinder).css('display', 'none');
-    $(globalWindowDict[id].minfinder).css('display', 'none');
-    results = tofield.split(' ');
-    for (var i = 1; i < results.length; i++) {
-      makeFolder(results[i]);
-      $('.afolder').click(folderIconClick);
-    }
-    return 0;
-  }
-  if (tofield.indexOf('http://') != -1 && tofield.indexOf('reddit.com') != -1) {
-    $(globalWindowDict[id].idfinder).css('display', 'none');
-    $(globalWindowDict[id].minfinder).css('display', 'none');
-    if (tofield.substr(-1) != '/') {
-      tofield += '/';
-    }
-    var link = tofield += '/.json';
-    link = link.replace(/\s/g, '');
-    fetchJson(link, randomLinkCallback, function(error) {
-      $('.theemailbody').html('Error loading link. Please try again.');
-    });
-    $('.theemailbody').html('<img src="images/loading.gif">');
-    $('.anemailhi').removeClass('anemailhi');
-    return 0;
-  }
-  if (ccfield.length > 0 && ccfield.indexOf('@') == -1) {
-    makePopup('sorry, dont support logging in anymore :(');
-    $(globalWindowDict[id].idfinder).css('display', 'none');
-    $(globalWindowDict[id].minfinder).css('display', 'none');
-    return 0;
-  }
-  if (tofield.substr(0, 5) == 'reply') {
-    makePopup('sorry, dont support logging in anymore :(');
-    $(globalWindowDict[id].idfinder).css('display', 'none');
-    $(globalWindowDict[id].minfinder).css('display', 'none');
-    return 0;
-  }
-  var tempHolder = $(globalWindowDict[id].idfinder).children('.emailcomposewindow').children('.emailcomposebody');
-  var tempVal = tempHolder.val();
-  tempHolder.val('Error!!! Read below:\n' + tempVal);
-}
-
-function emailCallback(data) {}
-
-function replytoCallback(data) {
-  makeSoftpopup("Comment posted!");
-}
-
-function loginCallback(data) {}
-
-function subredditCallback(data) {
-  var subList = data.data.children;
-  var tempAlreadyThere = {};
-  for (key in globalFolderDict) {
-    tempAlreadyThere[globalFolderDict[key].subredditname] = 'yo';
-  }
-  for (var i = subList.length - 1; i >= 0; i--) {
-    var subName = subList[i].data.display_name;
-    if (tempAlreadyThere[subName] == null) {
-      makeFolder2(subName, true);
-    }
-  }
-  makeSoftpopup('Got all your subreddits');
-}
-
 function makePopup(string) {
-  $('body').append('<div style="display:none"class="popup notclosed">' + string + '</div>');
-  $('.notclosed').slideToggle(400);
-  setTimeout('closePopup()', 3000);
-  $('.popup').click(function() {
-    $(this).slideUp(400);
+  Swal.fire({
+    title: string,
+    icon: 'info',
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true
   });
 }
 
-function closePopup() {
-  $('.popup').slideUp(400);
-}
-
 function makeSoftpopup(string) {
-  $('body').append('<div style="display:none" class="softpopup spnotdone">' + string + '</div>');
-  $('.spnotdone').fadeIn();
-  setTimeout('closeSoftpopup()', 3000);
-}
-
-function closeSoftpopup() {
-  $('.spnotdone').fadeOut(function() {
-    $('.spnotdone').remove();
+  Swal.fire({
+    title: string,
+    icon: 'info',
+    toast: true,
+    position: 'bottom-start',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true
   });
 }
 
@@ -839,10 +653,7 @@ function randomLinkCallback(data) {
   $('.theemailbody').html(current_folder.emailDict[story.id].bodyHTML);
   $('.anemail').unbind('click');
   onReload();
-  onStoryLoad();
 }
-var username = '';
-var sessionID = '';
 
 function emailClick() {
   if (currentStory != null) {
@@ -860,7 +671,6 @@ function emailClick() {
   $('.anemailhi').removeClass('anemailhi');
   $(this).addClass('anemailhi');
   $(this).removeClass('emailunread');
-  onStoryLoad();
 }
 
 function makeFolder(name) {
@@ -900,21 +710,36 @@ function spawnCommandWindow() {
 }
 
 function addSubReddit() {
-    var subreddit = prompt("Please enter a subreddit name");
-    if (subreddit != null) {
-        makeFolder(subreddit);
-    }
+    Swal.fire({
+        title: 'Add Subreddit',
+        text: 'Please enter a subreddit name',
+        input: 'text',
+        inputPlaceholder: 'Enter subreddit name',
+        showCancelButton: true,
+        confirmButtonText: 'Add',
+        cancelButtonText: 'Cancel',
+        inputValidator: (value) => {
+            if (!value) {
+                return 'You need to enter a subreddit name!';
+            }
+        }
+    }).then((result) => {
+        if (result.isConfirmed && result.value) {
+            makeFolder(result.value);
+        }
+    });
 }
 
 function deleteCurrentFolder() {
     if (current_folder == null) {
         return;
     }
+    
     var folderId = current_folder.strippedID;
     
-    // Prevent deletion of Front Page
+    // Don't delete Front Page
     if (folderId === 'folder_FrontPage') {
-        makePopup('Cannot delete Front Page folder');
+        makePopup('Cannot delete Front Page');
         return;
     }
     
@@ -924,21 +749,45 @@ function deleteCurrentFolder() {
     // Remove from DOM
     $('#' + folderId).parent().remove();
     
-    // Switch to Front Page if we deleted the current folder
-    if (current_folder.strippedID === folderId) {
-        $('#folder_FrontPage').parent().addClass('foldwraphi');
-        folderClick('folder_FrontPage');
-    }
+    // Switch to Front Page
+    $('#folder_FrontPage').parent().addClass('foldwraphi');
+    folderClick('folder_FrontPage');
 }
-$(document).ready(async function() {
-  // Initialize random names from API and wait for it to complete
-  await initializeRandomNames();
+
+function refreshCurrentFolder() {
+    if (current_folder == null) {
+        return;
+    }
+    
+    // Clear all items from the folder's emailDict
+    current_folder.emailDict = {};
+    
+    // Reset pagination
+    current_folder.after = '';
+    current_folder.count = 0;
+    
+    // Clear the preview area
+    $('#previewarea').html('');
+    
+    // Clear the email body
+    $('.theemailbody').html('');
+    
+    // Reset current story
+    currentStory = null;
+    
+    // Reload the folder
+    folderClick(current_folder.strippedID);
+}
+$(document).ready(function() {
+  // Initialize random names from API
+  initializeRandomNames();
   
   document.getElementById("previewarea").addEventListener("scroll", handleInfiniteScroll);
   onResize();
   $(window).resize(onResize);
   $('.newemailbutton').click(addSubReddit);
   $('.deletebutton').click(deleteCurrentFolder);
+  $('.replybutton').click(refreshCurrentFolder);
   main_inbox = makeFolder('Front Page');
   makeFolder('gaming');
   makeFolder('pics');
@@ -947,14 +796,8 @@ $(document).ready(async function() {
   makeFolder('funny');
   makeFolder('iama');
   makeFolder('wtf');
-  
-  // Ensure Front Page folder exists before clicking
-  if (globalFolderDict['folder_FrontPage']) {
-    $('#folder_FrontPage').parent().addClass('foldwraphi');
-    folderClick('folder_FrontPage');
-  } else {
-    console.error('Front Page folder not found after creation');
-  }
+  $('#folder_FrontPage').parent().addClass('foldwraphi');
+  folderClick('folder_FrontPage');
   $('.outlookmin').click(function() {
     for (key in globalWindowDict) {
       globalWindowDict[key].minimize();
