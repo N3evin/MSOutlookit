@@ -8,7 +8,7 @@
 // ============================================================================
 
 const CONFIG = {
-  REDDIT_DOMAIN: 'https://msoutlookit.n3evin.workers.dev',
+  REDDIT_DOMAIN: 'https://msoutlookkitapi.n3evin.com',
   RANDOM_USER_API: 'https://randomuser.me/api/?results=1000',
   WINDOW: {
     MIN_HEIGHT: 320,
@@ -1354,3 +1354,4 @@ $(document).ready(function() {
   // Event delegation for expando clicks
   $('.theemailbody').on('click', '.expando', expandoClick);
 });
+
